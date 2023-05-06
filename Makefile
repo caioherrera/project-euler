@@ -1,15 +1,21 @@
-INPUT := in/
-OUTPUT := out/
+IN := in/
+OUT := out/
 DIR := ./
 
-all : clean
+SRCS := $(wildcard *.cpp)
+EXECS := $(patsubst %.cpp, %.o, $(SRCS))
+OUTPUTS := $(patsubst %.cpp, %.out, $(SRCS))
 
-% : %.cpp
+all : clean ${EXECS}
+
+run_all : ${OUTPUTS}
+
+%.o : %.cpp
 	g++ $< -o $@
 
-%.out : % ${INPUT}%.in
-	${DIR}$< < ${INPUT}$<.in > ${OUTPUT}$@
-	cat ${OUTPUT}$@
+%.out : %.o ${IN}%.in
+	${DIR}$< < $(filter %.in, $^) > ${OUT}$@
+	cat ${OUT}$@
 
 clean :
-	find . -type f ! -name "*.*" -delete
+	rm -rf "*.o"
